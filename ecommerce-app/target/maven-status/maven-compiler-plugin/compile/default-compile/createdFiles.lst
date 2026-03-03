@@ -1,0 +1,7 @@
+com\shopline\ecommerce\model\Product.class
+com\shopline\ecommerce\repository\ProductRepository.class
+com\shopline\ecommerce\repository\CartRepository.class
+com\shopline\ecommerce\controller\ProductController.class
+com\shopline\ecommerce\model\CartItem.class
+com\shopline\ecommerce\controller\CartController.class
+com\shopline\ecommerce\ECommerceApplication.class

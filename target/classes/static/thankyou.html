@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thank You - ShopLine</title>
+
+    <style>
+        body{
+            margin:0;
+            font-family: Arial, Helvetica, sans-serif;
+            background:url('images/bg.jpg') no-repeat center center/cover;
+        }
+
+        .overlay{
+            background:rgba(0,0,0,0.7);
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:40px;
+        }
+
+        .container{
+            display:flex;
+            width:1100px;
+            background:white;
+            border-radius:10px;
+            overflow:hidden;
+        }
+
+        /* LEFT SIDE */
+        .left{
+            flex:1;
+            color:white;
+            padding:50px;
+        }
+
+        .left h1{
+            font-size:60px;
+            color:#ffc107;
+            margin-bottom:10px;
+        }
+
+        .left p{
+            font-size:18px;
+        }
+
+        .delivery-box{
+            margin-top:30px;
+            background:rgba(255,255,255,0.1);
+            padding:15px;
+            border-radius:8px;
+        }
+
+        .stars{
+            margin-top:30px;
+            font-size:30px;
+            color:gold;
+        }
+
+        /* RIGHT SIDE */
+        .right{
+            flex:1;
+            background:#f8f9fa;
+            padding:40px;
+        }
+
+        .invoice-title{
+            font-size:28px;
+            font-weight:bold;
+        }
+
+        .yellow{
+            background:#ffc107;
+            padding:8px;
+            font-weight:bold;
+            margin-top:20px;
+        }
+
+        .download-btn{
+            margin-top:20px;
+            width:100%;
+            padding:12px;
+            background:#ffc107;
+            border:none;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .download-btn:hover{
+            background:#e0a800;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="container">
+
+        <!-- LEFT SIDE -->
+        <div class="left">
+
+            <h1>THANK YOU!</h1>
+            <p>Your order <strong id="orderId"></strong> is successfully placed.</p>
+
+            <div class="delivery-box">
+                🚚 Expected Delivery: <span id="deliveryDate"></span>
+            </div>
+
+            <div class="stars">
+                ⭐⭐⭐⭐☆
+                <p style="font-size:16px;">Rated 4 Stars! Thanks!</p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="right">
+
+            <div class="invoice-title">Invoice</div>
+            <h3 id="invoiceOrder"></h3>
+
+            <div class="yellow">
+                Product Description &nbsp;&nbsp;&nbsp;&nbsp; Price
+            </div>
+
+            <p id="productLine"></p>
+
+            <hr>
+
+            <h3 id="totalLine"></h3>
+
+            <button class="download-btn">DOWNLOAD INVOICE</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // Generate Random Order ID
+    const orderNumber = "ORD-" + Math.floor(Math.random()*1000000);
+    document.getElementById("orderId").innerText = "#" + orderNumber;
+    document.getElementById("invoiceOrder").innerText = "#" + orderNumber;
+
+    // Delivery Date (3 days later)
+    const d = new Date();
+    d.setDate(d.getDate()+3);
+    document.getElementById("deliveryDate").innerText = d.toDateString();
+
+    // Get product from localStorage
+    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+    if(wishlist.length > 0){
+        const item = wishlist[wishlist.length-1];
+
+        document.getElementById("productLine").innerText =
+            item.name + "    ₹" + item.price;
+
+        document.getElementById("totalLine").innerText =
+            "Total: ₹" + item.price;
+    } else {
+        document.getElementById("productLine").innerText =
+            "No product data found";
+    }
+
+</script>
+
+</body>
+</html>

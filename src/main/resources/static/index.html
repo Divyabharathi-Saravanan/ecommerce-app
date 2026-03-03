@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ShopLine Pro - Premium Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root { --bg-color: #f4f7f6; --text-color: #212529; --card-bg: #ffffff; --nav-bg: #212529; --sidebar-header: #212529; }
+        [data-theme="dark"] { --bg-color: #121212; --text-color: #f4f7f6; --card-bg: #1e1e1e; --nav-bg: #000000; --sidebar-header: #333333; }
+        body { padding-top: 90px; background: var(--bg-color); color: var(--text-color); transition: 0.3s; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: var(--nav-bg) !important; transition: 0.3s; }
+        .main-container { max-width: 1400px; margin: auto; padding: 0 15px; }
+        .sidebar-card { background: var(--card-bg); border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; position: sticky; top: 90px; }
+        .sidebar-header { background: var(--sidebar-header); color: white; padding: 15px; font-weight: bold; text-align: center; }
+        .category-header { transition: 0.3s; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .category-header:hover { background: rgba(0,0,0,0.05); }
+        .sub-category-list { background: rgba(0,0,0,0.03); }
+        .category-item { color: var(--text-color); transition: 0.2s; font-size: 0.9rem; padding: 10px; cursor: pointer; }
+        .category-item:hover { color: #007bff; background: rgba(0,123,255,0.1); }
+        .category-item.active { background: #007bff !important; color: white !important; }
+        .product-card { background: var(--card-bg); border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; transition: 0.3s; overflow: hidden; padding: 0 !important; }
+        .img-wrapper { height: 250px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: white; }
+        .img-wrapper img { height: 100%; width: 100%; object-fit: cover; }
+        .flash-deals-bar { background: linear-gradient(90deg, #0056b3 0%, #002d5e 100%); border-radius: 8px; padding: 12px 20px; color: white; display: flex; align-items: center; margin-bottom: 25px; min-height: 90px; }
+        .timer-box { background: white; color: #0056b3; padding: 3px 8px; border-radius: 4px; font-weight: bold; margin: 0 2px; }
+        .arrow-icon { transition: 0.3s; font-size: 10px; }
+        .rotate { transform: rotate(180deg); }
+        .bill-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 15px; }
+        .modal-content.shopping-bag { border-radius: 20px; border: none; overflow: hidden; }
+        .modal-header.bag-header { background: #212529; color: white; padding: 15px 25px; border: none; }
+        .bag-header .btn-close { filter: invert(1); }
+        .bag-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .bag-summary-row { display: flex; justify-content: space-between; color: #888; font-size: 0.95rem; margin-bottom: 5px; }
+        .bag-total-row { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 800; color: #000; padding: 15px 0; border-top: 1px solid #eee; margin-top: 10px; }
+        .btn-checkout { background: #ffc107; color: #000; border: none; border-radius: 12px; padding: 15px; font-weight: 800; text-transform: uppercase; width: 100%; transition: 0.3s; margin-top: 10px; }
+        .btn-checkout:hover { background: #e0a800; transform: translateY(-2px); }
+        .navbar { height: 70px !important; display: flex !important; align-items: center !important; padding: 0 !important; }
+        .navbar .container { display: flex !important; align-items: center !important; justify-content: space-between; height: 100%; }
+        .navbar-brand { display: flex !important; align-items: center !important; margin: 0 !important; padding: 0 !important; }
+        .search-wrapper { flex-grow: 1; max-width: 500px; margin: 0 20px; display: flex; align-items: center; }
+        .search-wrapper .input-group { height: 38px; }
+        .brand-text { letter-spacing: -0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        @media (max-width: 576px) { .brand-text { font-size: 22px !important; } }
+        .search-bar-container { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .search-bar-container input { border-radius: 25px 0 0 25px !important; padding-left: 20px; height: 40px; }
+        .search-bar-container .btn { border-radius: 0 25px 25px 0 !important; padding: 0 20px; border: none; }
+
+        /* Star Rating & Print Styles */
+.star-selected { color: #ffec00 !important; }
+
+@media print {
+    /* Ellathaiyum maraichutu invoice-ai matthum kaatum */
+    body * { visibility: hidden; }
+    #printable-invoice, #printable-invoice * { visibility: visible; }
+    #printable-invoice { 
+        position: absolute; 
+        left: 0; 
+        top: 0; 
+        width: 100% !important; 
+        box-shadow: none !important; 
+        border: none !important; 
+    }
+    .no-print { display: none !important; }
+}
+
+/* Full Background Cover Update */
+#order-success-screen {
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+/* Stock Label Styles */
+.stock-label {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 5px;
+}
+.stock-low { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.stock-out { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.stock-available { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body data-theme="light">
+
+<nav class="navbar navbar-dark fixed-top bg-dark shadow-sm">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand d-flex align-items-center" href="#" onclick="location.reload()">
+            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Logo" width="40" height="40" class="me-2">
+            <span style="font-size: 28px; font-weight: 850; color: #ffc107;">ShopLine <span style="color:white">PRO</span></span>
+        </a>
+        <div class="flex-grow-1 mx-3" style="max-width: 400px; position: relative;">
+    <div class="input-group" style="height: 36px;">
+        <input type="text" id="product-search" class="form-control border-0" 
+               placeholder="Search..." onkeyup="filterProducts()" 
+               onclick="showSearchHistory()" 
+               style="border-radius: 20px 0 0 20px; font-size: 14px;">
+        <button class="btn btn-warning" type="button" style="border-radius: 0 20px 20px 0; border: none;">
+            <i class="fas fa-search" style="font-size: 13px;"></i>
+        </button>
+    </div>
+    <div id="search-suggestions" class="shadow-sm" 
+         style="display: none; position: absolute; top: 40px; left: 0; width: 100%; 
+                background: white; border-radius: 8px; z-index: 1000; max-height: 200px; overflow-y: auto;">
+    </div>
+</div>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-link text-light p-1" onclick="toggleDarkMode()"><i class="fas fa-moon" id="theme-icon"></i></button>
+            <button class="btn btn-outline-warning btn-sm d-none d-md-inline-block" onclick="adminLogin()" style="border-radius: 20px; font-size: 12px; font-weight: 600; padding: 5px 12px;"><i class="fas fa-user-shield"></i> Admin</button>
+            <button class="btn btn-warning btn-sm fw-bold" onclick="showCart()" style="border-radius: 20px; padding: 5px 15px; font-size: 13px;">Cart 🛒 <span id="cart-count" class="badge bg-danger ms-1">0</span></button>
+            <button class="btn btn-outline-danger btn-sm fw-bold me-2" onclick="showWishlist()" style="border-radius: 20px; padding: 5px 15px; font-size: 13px;">Wishlist ❤️ <span id="wish-count" class="badge bg-danger ms-1">0</span></button>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="sidebar-card shadow-sm">
+                <div class="sidebar-header">Categories</div>
+                <div class="category-item active p-3" onclick="displayProducts('All')">All Products</div>
+                <div class="category-group border-bottom">
+                    <div class="category-header p-3" onclick="toggleSubMenu(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;"><span>Beauty & Personal Care</span><span class="arrow-icon">▼</span></div>
+                    <div class="sub-category-list" style="display: none;">
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Bath & Body')">Bath & Body</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Baby Care')">Baby Care</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Hair Care')">Hair Care</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Healthcare & Pharma')">Healthcare & Pharma</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Beauty Products')">Beauty Products</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Grooming & Hygiene')">Grooming & Hygiene</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Sexual Wellness')">Sexual Wellness</div>
+                    </div>
+                </div>
+                <div class="category-group border-bottom">
+                    <div class="category-header p-3" onclick="toggleSubMenu(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;"><span>Household & Lifestyle</span><span class="arrow-icon">▼</span></div>
+                    <div class="sub-category-list" style="display: none;">
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Cleaning Essentials')">Cleaning Essentials</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Home & Furnishing')">Home & Furnishing</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Kitchen Needs')">Kitchen Needs</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Pooja Essentials')">Pooja Essentials</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Stationery Supplies')">Stationery Supplies</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Electricals & Tools')">Electricals & Tools</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Toys & Games')">Toys & Games</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Pet Supplies')">Pet Supplies</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Sports & Fitness')">Sports & Fitness</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Fashion & Accessories')">Fashion & Accessories</div>
+                    </div>
+                </div>
+                <div class="category-group border-bottom">
+                    <div class="category-header p-3" onclick="toggleSubMenu(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;"><span>Mobiles & Electronics</span><span class="arrow-icon">▼</span></div>
+                    <div class="sub-category-list" style="display: none;">
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Electronics & Gadgets')">Electronics & Gadgets</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Smartwatch & Audio')">Smartwatch & Audio</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Mobiles')">Mobiles</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Laptops & Tablets')">Laptops & Tablets</div>
+                    </div>
+                </div>
+                <div class="category-group border-bottom">
+                    <div class="category-header p-3" onclick="toggleSubMenu(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;"><span>Snacks & Drinks</span><span class="arrow-icon">▼</span></div>
+                    <div class="sub-category-list" style="display: none;">
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Bakery & Biscuits')">Bakery & Biscuits</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Drinks & Juices')">Drinks & Juices</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Sweets')">Sweets</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Chips & Namkeens')">Chips & Namkeens</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Tea, Coffee & Milk Drinks')">Tea, Coffee & Milk Drinks</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Chocolates')">Chocolates</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Ice Cream')">Ice Cream</div>
+                    </div>
+                </div>
+                <div class="category-group">
+                    <div class="category-header p-3" onclick="toggleSubMenu(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;"><span>Grocery</span><span class="arrow-icon">▼</span></div>
+                    <div class="sub-category-list" style="display: none;">
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Fresh Fruits')">Fresh Fruits</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Fresh Vegetables')">Fresh Vegetables</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Atta, Rice & Dal')">Atta, Rice & Dal</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Oil, Ghee & Masala')">Oil, Ghee & Masala</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Dairy, Bread & Eggs')">Dairy, Bread & Eggs</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Cereals & Dry Fruits')">Cereals & Dry Fruits</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Chicken, Fish & Meats')">Chicken, Fish & Meats</div>
+                        <div class="category-item p-2 ps-4" onclick="displayProducts('Instant & Frozen Food')">Instant & Frozen Food</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="flash-deals-bar shadow-sm">
+                <div class="d-flex flex-column align-items-center me-4" style="border-right: 1px solid rgba(255,255,255,0.2); padding-right: 20px;">
+                    <h6 class="m-0 fw-bold" style="font-size: 0.8rem;"><i class="fas fa-bolt text-warning"></i> FLASH DEALS</h6>
+                    <div class="d-flex align-items-center mt-1"><span class="timer-box" id="hr">00</span>:<span class="timer-box" id="min">00</span>:<span class="timer-box" id="sec">00</span></div>
+                </div>
+                <div id="flash-content" class="d-flex align-items-center flex-grow-1" style="transition: 0.5s;">
+                    <div style="width: 60px; height: 60px; background: white; border-radius: 8px; padding: 5px; margin-right: 15px;"><img id="flash-img" src="https://m.media-amazon.com/images/I/71vw866zNfL._SL1500_.jpg" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                    <div class="text-white">
+                        <h6 id="flash-name" class="m-0 fw-bold text-truncate" style="max-width: 200px;">iPhone 15 Pro Max</h6>
+                        <div class="d-flex align-items-center gap-2"><span class="badge bg-danger" id="flash-off" style="font-size: 0.7rem;">40% OFF</span><span class="fw-bold" style="color: #ffc107;">₹<span id="flash-price">95,000</span></span></div>
+                    </div>
+                    <button class="btn btn-warning btn-sm ms-auto fw-bold" style="border-radius: 20px;" onclick="displayProducts('All')">Grab Now</button>
+                </div>
+            </div>
+            <h5 class="fw-bold mb-3" id="current-cat">Product Catalog</h5>
+            <div id="product-grid" class="row row-cols-1 row-cols-md-3 g-4"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shopping-bag shadow-lg">
+            <div class="modal-header bag-header">
+                <h5 class="fw-bold mb-0">Shopping Bag</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body px-4">
+                <div id="cart-items-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+                <div class="bag-summary-row"><span>Subtotal</span><span class="fw-bold text-dark">₹<span id="bag-subtotal">0</span></span></div>
+                <div class="bag-summary-row"><span>Shipping</span><span class="fw-bold text-dark">₹<span id="bag-shipping">0</span></span></div>
+                <div class="bag-total-row"><span>Total</span><span>₹<span id="cart-total">0</span></span></div>
+                <button class="btn-checkout" onclick="placeOrder()">Place Order</button>
+                <p class="text-center mt-2 mb-0"><small class="text-muted">Secure Checkout Guaranteed</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="wishlistModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="fw-bold mb-0">My Wishlist ❤️</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="wishlist-items-grid" class="row row-cols-1 row-cols-md-2 g-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || []; // CHANGE: Sync with storage on load
+
+    function toggleDarkMode() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        const theme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', theme);
+        icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+    }
+
+    function adminLogin() {
+        const user = prompt("Enter Admin Username:");
+        if (user === "divya") {
+            const pass = prompt("Enter Admin Password:");
+            if (pass === "divya123") { window.location.href = "admin.html"; } 
+            else { alert("Incorrect Password!"); }
+        }
+    }
+
+    // CHANGE: Added price cleaning and global cart sync
+    function addToCart(name, price) {
+        let storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+        let cleanPrice = String(price).replace(/[₹,]/g, '');
+        let finalPrice = Number(cleanPrice) || 0;
+
+        const existingItem = storedCart.find(item => item.name === name);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            storedCart.push({ name: name, price: finalPrice, quantity: 1 });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(storedCart));
+        cart = storedCart; // Update global variable
+        
+        updateCartCount();
+        if (document.getElementById('cartModal').classList.contains('show')) showCart();
+        
+        alert(name + " added to Bag! Price: ₹" + finalPrice);
+    }
+
+    function updateCartCount() {
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        document.getElementById('cart-count').innerText = count;
+    }
+
+    function showCart() {
+        const list = document.getElementById('cart-items-list');
+        let subtotal = 0;
+        list.innerHTML = cart.length === 0 ? "<p class='text-center py-4 text-muted'>Your bag is empty!</p>" : "";
+        
+        cart.forEach((item, index) => {
+            list.innerHTML += `
+                <div class="bag-item">
+                    <div>
+                        <h6 class="mb-0 fw-bold">${item.name}</h6>
+                        <small class="text-muted">Quantity: ${item.quantity}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold">₹${(item.price * item.quantity).toFixed(2)}</div>
+                        <small class="text-danger" style="cursor:pointer" onclick="removeFromCart(${index})">Remove</small>
+                    </div>
+                </div>`;
+            subtotal += (item.price * item.quantity);
+        });
+
+        let shipping = subtotal > 0 ? (subtotal > 299 ? 0 : 40) : 0;
+        let total = subtotal + shipping;
+
+        document.getElementById('bag-subtotal').innerText = subtotal.toFixed(2);
+        document.getElementById('bag-shipping').innerText = shipping === 0 ? "Free" : shipping;
+        document.getElementById('cart-total').innerText = total.toFixed(2);
+        
+        if (!bootstrap.Modal.getInstance(document.getElementById('cartModal'))) {
+            new bootstrap.Modal(document.getElementById('cartModal')).show();
+        }
+    }
+
+    
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        showCart();
+    }
+
+    // 1. Search pannum pothu history-la save panna
+function filterProducts() {
+    let input = document.getElementById('product-search').value.toLowerCase();
+    
+    // Enter key press panna history-la save aagum
+    if (event.key === 'Enter' && input.trim() !== "") {
+        saveSearchHistory(input);
+        document.getElementById('search-suggestions').style.display = 'none';
+    }
+
+    let cards = document.querySelectorAll('.product-card');
+    cards.forEach(card => {
+        let title = card.querySelector('h6').innerText.toLowerCase();
+        card.parentElement.style.display = title.includes(input) ? "" : "none";
+    });
+}
+
+// 2. Local Storage-la save panna
+function saveSearchHistory(term) {
+    let history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    if (!history.includes(term)) {
+        history.unshift(term); // New search mela varum
+        if (history.length > 5) history.pop(); // Max 5 items mattum
+        localStorage.setItem('searchHistory', JSON.stringify(history));
+    }
+}
+
+// 3. History-ai kaatta
+function showSearchHistory() {
+    let history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    let box = document.getElementById('search-suggestions');
+    
+    if (history.length > 0) {
+        box.innerHTML = history.map(term => `
+            <div class="p-2 border-bottom suggestion-item" 
+                 style="cursor: pointer; font-size: 13px;" 
+                 onclick="applySuggestion('${term}')">
+                <i class="fas fa-history text-muted me-2"></i> ${term}
+            </div>
+        `).join('');
+        box.style.display = 'block';
+    }
+}
+
+// Suggestion-ai click panna search aagum
+function applySuggestion(term) {
+    document.getElementById('product-search').value = term;
+    filterProducts();
+    document.getElementById('search-suggestions').style.display = 'none';
+}
+
+// Veliya click panna suggestions close aagum
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.flex-grow-1')) {
+        document.getElementById('search-suggestions').style.display = 'none';
+    }
+});
+
+    function placeOrder() {
+    if (cart.length === 0) return alert("Cart empty boss!");
+    const total = parseFloat(document.getElementById('cart-total').innerText);
+    const orderID = "ORD-" + Math.floor(100000 + Math.random() * 900000);
+    const orderDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    const delDate = new Date(); delDate.setDate(delDate.getDate() + 4);
+    const deliveryStr = delDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    // --- GLOBAL RESET & CSS ---
+    const styleFix = `
+        <style>
+            html, body { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                width: 100% !important; 
+                height: 100% !important; 
+                overflow-x: hidden;
+            }
+            #order-success-screen {
+                min-height: 100vh;
+                width: 100vw;
+                background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                            url('https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=1920&q=80');
+                background-size: cover !important;
+                background-position: center center !important;
+                background-attachment: fixed !important;
+                background-repeat: no-repeat !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+            .star-selected { color: #ffec00 !important; }
+            @media print { .no-print { display: none !important; } }
+        </style>
+    `;
+
+    document.body.innerHTML = styleFix + `
+    <div id="order-success-screen">
+        <div class="main-layout" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 50px; width: 100%; max-width: 1200px; padding: 40px 20px;">
+            
+            <div class="no-print" style="flex: 1; min-width: 320px; color: white;">
+                <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: #ffec00; margin:0; line-height: 1;">THANK YOU!</h1>
+                <p style="font-size: 1.2rem; margin-top: 15px;">Your order <b style="color:#ffec00">#${orderID}</b> is successfully placed.</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border-left: 6px solid #ffec00; backdrop-filter: blur(10px); margin-top: 25px;">
+                    <p style="margin:0; font-size: 1.1rem;">🚚 <b>Expected Delivery:</b> ${deliveryStr}</p>
+                </div>
+                
+                <div style="margin-top: 50px;">
+                    <p>Rate your experience:</p>
+                    <div id="star-rating" style="font-size: 40px; color: #444; cursor: pointer; display: flex; gap: 10px;">
+                        <i class="fas fa-star" data-val="1"></i><i class="fas fa-star" data-val="2"></i><i class="fas fa-star" data-val="3"></i><i class="fas fa-star" data-val="4"></i><i class="fas fa-star" data-val="5"></i>
+                    </div>
+                    <p id="rate-text" style="color: #ffec00; font-weight: bold; margin-top: 15px; font-size: 1.2rem;"></p>
+                </div>
+            </div>
+
+            <div id="printable-invoice" style="background: white; width: 100%; max-width: 450px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px;">
+                    <div><h6 style="color: #888; margin:0;">INVOICE</h6><h4 style="margin:0; font-weight: 700;">#${orderID}</h4></div>
+                    <h3 style="margin:0; font-weight: 800; font-size: 22px;">ShopLine <span style="color:#ffc107">PRO</span></h3>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 25px;">
+                    <thead><tr style="border-bottom: 2px solid #333;"><th style="text-align: left; padding-bottom: 10px;">Product</th><th style="text-align: right; padding-bottom: 10px;">Amount</th></tr></thead>
+                    <tbody>${cart.map(i => `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px 0;">${i.name} (x${i.quantity})</td><td style="text-align: right; font-weight: 600;">₹${(i.price * i.quantity).toFixed(2)}</td></tr>`).join('')}</tbody>
+                </table>
+                <div style="margin-top: 20px; border-top: 2px solid #ffc107; padding-top: 15px; display: flex; justify-content: space-between; font-size: 22px; font-weight: 800;"><span>Total:</span><span>₹${total.toFixed(2)}</span></div>
+                <button class="no-print" onclick="window.print()" style="background: #222; color: #fff; border:none; padding:16px; width:100%; font-weight:bold; cursor:pointer; border-radius: 8px; margin-top: 25px;">DOWNLOAD INVOICE</button>
+                <button class="no-print" onclick="location.reload()" style="background:none; border:none; color:#999; width:100%; margin-top:15px; cursor:pointer;">Back to Home</button>
+            </div>
+        </div>
+    </div>`;
+
+    // Star Logic
+    const stars = document.querySelectorAll('#star-rating i');
+    stars.forEach(s => {
+        s.addEventListener('click', function() {
+            let val = this.dataset.val;
+            stars.forEach(star => star.classList.remove('star-selected'));
+            for(let i=0; i<val; i++) stars[i].classList.add('star-selected');
+            document.getElementById('rate-text').innerText = "Thanks for " + val + " stars! 😍";
+        });
+    });
+
+    cart = []; localStorage.removeItem('cart');
+}
+
+    function toggleSubMenu(header) {
+        const sub = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow-icon');
+        const isVisible = sub.style.display === "block";
+        document.querySelectorAll('.sub-category-list').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.arrow-icon').forEach(a => a.classList.remove('rotate'));
+        if (!isVisible) { sub.style.display = "block"; arrow.classList.add('rotate'); }
+    }
+
+    async function displayProducts(category) {
+        const grid = document.getElementById('product-grid');
+        const catTitle = document.getElementById('current-cat');
+        if(catTitle) catTitle.innerText = category;
+        try {
+            const url = (category === 'All') ? '/api/products' : `/api/products?category=${encodeURIComponent(category)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            renderProducts(data); 
+        } catch (e) {
+            console.error("Fetch error:", e);
+            grid.innerHTML = `<p class='text-center w-100'>Database connect aagala. Server running-la irukkannu parunga.</p>`;
+        }
+    }
+
+    // CHANGE: Added p.price and imgUrl to toggleWishlist call
+    function renderProducts(productsToRender) {
+    const grid = document.getElementById('product-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = productsToRender.map(p => {
+        const imgUrl = p.imgUrl || p.imageUrl || p.image || 'https://via.placeholder.com/200';
+        const prodName = p.name ? p.name.replace(/'/g, "\\'") : "Product";
+        
+        // --- STOCK LOGIC ---
+        let stockCount = Math.floor(Math.random() * 10); 
+        
+        // --- HORIZONTAL BADGES ---
+        const stockAndPriceDropBadges = `
+            <div class="d-flex flex-wrap gap-2 mb-2" style="font-size: 10px;">
+                <div class="badge-tag" style="background: #e6fcf5; color: #0ca678; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 1px solid #c3fae8;">
+                    <i class="fas fa-arrow-down me-1"></i> PRICE DROP
+                </div>
+                <div class="badge-tag" style="padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 1px solid; ${
+                    stockCount === 0 ? 'background: #fff5f5; color: #fa5252; border-color: #ffe3e3;' : 
+                    (stockCount <= 3 ? 'background: #fff9db; color: #f08c00; border-color: #fff3bf;' : 'background: #e7f5ff; color: #228be6; border-color: #d0ebff;')
+                }">
+                    ${stockCount === 0 ? 'Out of Stock' : (stockCount <= 3 ? `🔥 Only ${stockCount} left!` : 'In Stock')}
+                </div>
+            </div>
+        `;
+
+        return `
+        <div class="col">
+            <div class="card h-100 product-card border-0 shadow-sm" style="position: relative; border-radius: 12px; overflow: hidden; background: white;">
+                
+                <div onclick="toggleWishlist('${prodName}', '${p.price}', '${imgUrl}')" style="position: absolute; top: 10px; right: 10px; z-index: 10; cursor: pointer; background: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <i class="fa-regular fa-heart" id="wish-icon-${prodName.replace(/\s+/g, '')}" style="color: #ff4757; font-size: 16px;"></i>
+                </div>
+                
+                <div class="img-wrapper" style="height: 180px; background: #f9f9f9;"><img src="${imgUrl}" alt="${p.name}" style="mix-blend-mode: multiply;"></div>
+                
+                <div class="card-body d-flex flex-column" style="padding: 15px;">
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h6 class="card-title m-0" style="font-weight: 700; font-size: 15px; max-width: 75%;">${p.name}</h6>
+                        <button class="btn btn-outline-dark p-0" onclick="addToCart('${prodName}', '${p.price}')" 
+                                style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: 0.2s;" 
+                                ${stockCount === 0 ? 'disabled' : ''}>
+                            <i class="fas fa-shopping-cart" style="font-size: 13px;"></i>
+                        </button>
+                    </div>
+                    
+                    ${stockAndPriceDropBadges}
+
+                    <div class="mb-2" style="color: #ffc107; font-size: 11px;">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+
+                    <div class="mt-auto pt-2" style="border-top: 1px solid #eee;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="m-0" style="color: #007bff; font-weight: 800; font-size: 18px;">₹${p.price}</h5>
+                            <button class="btn btn-warning fw-bold" onclick="directBuy('${prodName}', '${p.price}')" 
+                                    style="font-size: 11px; padding: 7px 15px; border-radius: 8px;" 
+                                    ${stockCount === 0 ? 'disabled' : ''}>
+                                BUY NOW
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+    // CHANGE: Captures full object (price, img) into storage
+    function toggleWishlist(name, price, img) {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        const index = wishlist.findIndex(item => (item.name || item) === name);
+        if (index === -1) {
+            wishlist.push({ name: name, price: price || "0", image: img || 'https://via.placeholder.com/150' });
+            alert(name + " added! ❤️");
+        } else {
+            wishlist.splice(index, 1);
+        }
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        updateWishlistCount();
+        if (document.getElementById('wishlistModal').classList.contains('show')) showWishlist();
+    }
+
+    function updateWishlistCount() {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        document.getElementById('wish-count').innerText = wishlist.length;
+    }
+
+    // CHANGE: Corrected display logic and addToCart parameter passing
+    function showWishlist() {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        const listGrid = document.getElementById('wishlist-items-grid');
+        listGrid.innerHTML = wishlist.length === 0 ? "<p class='text-center w-100 py-4'>Your wishlist is empty! ❤️</p>" : "";
+        
+        wishlist.forEach(item => {
+            const cleanPrice = String(item.price || "0").replace(/[₹,]/g, '');
+            const safeName = item.name.replace(/'/g, "\\'");
+            listGrid.innerHTML += `
+                <div class="col-12 mb-2">
+                    <div class="card border-0 shadow-sm p-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="${item.image || item.img}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold">${item.name}</h6>
+                                <small class="text-primary fw-bold">₹${item.price}</small><br>
+                                <button class="btn btn-sm btn-warning mt-1" onclick="addToCart('${safeName}', '${cleanPrice}')">Add to Cart</button>
+                                <small class="text-danger ms-2" style="cursor:pointer" onclick="toggleWishlist('${safeName}')">Remove</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        if (!bootstrap.Modal.getInstance(document.getElementById('wishlistModal'))) {
+            new bootstrap.Modal(document.getElementById('wishlistModal')).show();
+        }
+    }
+
+    function directBuy(name, price) {
+        addToCart(name, price);
+        showCart();
+    }
+
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('hr').innerText = String(23 - now.getHours()).padStart(2, '0');
+        document.getElementById('min').innerText = String(59 - now.getMinutes()).padStart(2, '0');
+        document.getElementById('sec').innerText = String(59 - now.getSeconds()).padStart(2, '0');
+    }, 1000);
+
+    const flashProducts = [
+        { name: "9W LED Bulb Set", price: "499", off: "50% OFF", img: "https://images.unsplash.com/photo-1574805503237-508d9cc16fa8?w=600" },
+        { name: "Sony WH-1000XM5", price: "24,999", off: "30% OFF", img: "https://m.media-amazon.com/images/I/51SKmu2G9FL._SL1200_.jpg" },
+        { name: "MacBook Air M2", price: "89,000", off: "25% OFF", img: "https://m.media-amazon.com/images/I/71f5Eu5lJSL._SL1500_.jpg" }
+    ];
+    let curF = 0;
+    setInterval(() => {
+        const content = document.getElementById('flash-content');
+        curF = (curF + 1) % flashProducts.length;
+        content.style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('flash-img').src = flashProducts[curF].img;
+            document.getElementById('flash-name').innerText = flashProducts[curF].name;
+            document.getElementById('flash-price').innerText = flashProducts[curF].price;
+            document.getElementById('flash-off').innerText = flashProducts[curF].off;
+            content.style.opacity = '1';
+        }, 500);
+    }, 4000);
+
+    window.onload = () => {
+        displayProducts('All');
+        updateCartCount();
+        updateWishlistCount();
+    };
+</script>
+
+<footer style="background-color: #ffffff; color: #333; padding-top: 50px; border-top: 1px solid #eee; font-family: 'Poppins', sans-serif;">
+    <div class="container">
+        <div class="row text-center mb-5 pb-4 border-bottom">
+            <div class="col-md-3 mb-3"><i class="fas fa-certificate text-warning mb-2" style="font-size: 24px;"></i><h6 class="fw-bold mb-1">100% Authentic</h6><small class="text-muted">Directly sourced from brands</small></div>
+            <div class="col-md-3 mb-3"><i class="fas fa-truck text-warning mb-2" style="font-size: 24px;"></i><h6 class="fw-bold mb-1">Free Shipping</h6><small class="text-muted">On all orders above ₹299</small></div>
+            <div class="col-md-3 mb-3"><i class="fas fa-user-check text-warning mb-2" style="font-size: 24px;"></i><h6 class="fw-bold mb-1">Certified Advisors</h6><small class="text-muted">Get expert consultations</small></div>
+            <div class="col-md-3 mb-3"><i class="fas fa-undo text-warning mb-2" style="font-size: 24px;"></i><h6 class="fw-bold mb-1">Easy Returns</h6><small class="text-muted">Hassle-free pick-ups</small></div>
+        </div>
+        <div class="row pt-4">
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-4">Contact Us</h5>
+                <p><i class="fas fa-phone-alt text-warning"></i> Call: 1-800-890-3030</p>
+                <p><i class="fab fa-whatsapp text-success"></i> WhatsApp: 9003835651</p>
+                <p><i class="fas fa-envelope text-primary"></i> help@shopline.com</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-4">Quick Links</h5>
+                <ul class="list-unstyled text-muted"><li>Brands</li><li>Offers</li><li>Wellness</li><li>Terms & Conditions</li></ul>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-4">Categories</h5>
+                <div class="d-flex flex-wrap gap-2"><span class="badge bg-light text-dark border">Mobiles</span><span class="badge bg-light text-dark border">Beauty</span><span class="badge bg-light text-dark border">Laptops</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center p-3 mt-4" style="background: #f8f9fa; border-top: 1px solid #eee;">© 2026 <b>ShopLine PRO</b>. All Rights Reserved.</div>
+    <a href="https://wa.me/9003835651" target="_blank" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"><i class="fab fa-whatsapp"></i></a>
+</footer>
+</body>
+</html>
