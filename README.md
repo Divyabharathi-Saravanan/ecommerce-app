@@ -99,7 +99,7 @@ Default Port: `http://localhost:8082`
 
 ## 👩‍💻 Developed By
 
-Divya Bharathi
+Divyabharathi Saravanan
 
 ---
 
